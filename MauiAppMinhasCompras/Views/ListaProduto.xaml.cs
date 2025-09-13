@@ -14,7 +14,13 @@ public partial class ListaProduto : ContentPage
 		lst_produtos.ItemsSource = lista;
 	}
 
-	protected async override void OnAppearing()
+	protected override void OnAppearing()
+	{
+		base.OnAppearing();
+		CarregarProdutos(); // Certifique-se de que este método recarrega a lista do banco
+	}
+
+	private async void CarregarProdutos()
 	{
 		try
 		{
@@ -108,7 +114,7 @@ public partial class ListaProduto : ContentPage
 		{
 			Produto p = e.SelectedItem as Produto;
 
-			Navigation.PushAsync(new Views.EditarProduto
+			Navigation.PushAsync(new Views.EditarProduto(p)
 			{
 				BindingContext = p,
 			});
@@ -137,5 +143,12 @@ public partial class ListaProduto : ContentPage
 		{
 			lst_produtos.IsRefreshing = false;
 		}
+	}
+
+	public void AtualizarLista()
+	{
+		// Supondo que você já tenha um método para atualizar a lista, como OnAppearing
+		// Você pode chamar OnAppearing diretamente ou recarregar a lista conforme sua lógica
+		OnAppearing();
 	}
 }
