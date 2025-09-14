@@ -24,6 +24,11 @@
                    Placeholder="Busca de Produtos"                    
                    TextChanged="txt_search_TextChanged" />
 
+        <Picker x:Name="categoriaPicker"
+                Title="Filtrar por categoria"
+                SelectedIndexChanged="CategoriaPicker_SelectedIndexChanged"
+                Margin="10"/>
+
         <Frame Padding="0" Margin="10" VerticalOptions="FillAndExpand">
             <ListView x:Name="lst_produtos" 
                   IsPullToRefreshEnabled="True"

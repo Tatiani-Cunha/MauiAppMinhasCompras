@@ -18,13 +18,10 @@ namespace MauiAppMinhasCompras.Helpers
             return _conn.InsertAsync(p); // insere o produto p na tabela Produto
         }
 
-        public Task<List<Produto>> Update(Produto p)
+        public Task<int> Update(Produto p)
         {
-            string sql = "UPDATE Produto SET Descricao = ?, Quantidade = ?, Preco = ?, Categoria = ? WHERE ID = ?";
-
-            return _conn.QueryAsync<Produto>(
-                sql, p.Descricao, p.Quantidade, p.Preco, p.ID, p.Categoria
-            );
+            // Use o método UpdateAsync para atualizar corretamente pelo ID
+            return _conn.UpdateAsync(p);
         }
 
         public Task<int> Delete(int id)
@@ -52,7 +49,14 @@ namespace MauiAppMinhasCompras.Helpers
             return result.Select(r => (r.Categoria, r.Total)).ToList();
         }
 
-        
-        
+        // Adicione este método na classe SQLiteDatabaseHelper
+        public Task<List<Produto>> GetByCategoria(string categoria)
+        {
+            // Trate "Sem Categoria" como valor nulo ou vazio no banco
+            if (categoria == "Sem Categoria")
+                return _conn.Table<Produto>().Where(p => p.Categoria == null || p.Categoria == "").ToListAsync();
+            else
+                return _conn.Table<Produto>().Where(p => p.Categoria == categoria).ToListAsync();
+        }
     }
 }

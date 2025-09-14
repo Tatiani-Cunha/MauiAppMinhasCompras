@@ -12,6 +12,7 @@ public partial class ListaProduto : ContentPage
 		InitializeComponent();
 
 		lst_produtos.ItemsSource = lista;
+		CarregarCategorias();
 	}
 
 	protected override void OnAppearing()
@@ -36,6 +37,17 @@ public partial class ListaProduto : ContentPage
 		}
 	}
 
+	private async void CarregarCategorias()
+	{
+		var produtos = await App.Db.GetAll();
+		var categorias = produtos
+			.Select(p => string.IsNullOrWhiteSpace(p.Categoria) ? "Sem Categoria" : p.Categoria)
+			.Distinct()
+			.OrderBy(c => c)
+			.ToList();
+		categorias.Insert(0, "Todas");
+		categoriaPicker.ItemsSource = categorias;
+	}
 
 	private void ToolbarItem_Clicked(object sender, EventArgs e)
 	{
@@ -180,6 +192,26 @@ public partial class ListaProduto : ContentPage
 		catch (Exception ex)
 		{
 			await DisplayAlert("Ops", ex.Message, "OK");
+		}
+	}
+
+	// Adicione este método na classe ListaProduto
+	private async void CategoriaPicker_SelectedIndexChanged(object sender, EventArgs e)
+	{
+		var picker = sender as Picker;
+		string categoriaSelecionada = picker.SelectedItem as string;
+
+		lista.Clear();
+
+		if (string.IsNullOrWhiteSpace(categoriaSelecionada) || categoriaSelecionada == "Todas")
+		{
+			List<Produto> tmp = await App.Db.GetAll();
+			tmp.ForEach(i => lista.Add(i));
+		}
+		else
+		{
+			List<Produto> tmp = await App.Db.GetByCategoria(categoriaSelecionada);
+			tmp.ForEach(i => lista.Add(i));
 		}
 	}
 }
