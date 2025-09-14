@@ -25,6 +25,13 @@ public partial class NovoProduto : ContentPage
 				Categoria = picker_categoria.SelectedItem != null ? picker_categoria.SelectedItem.ToString() : string.Empty
 			};
 
+			//var produtosExistentes = await App.Db.Search(p.Descricao);
+			//if (produtosExistentes.Any())
+			//{
+			//	await DisplayAlert("Atenção", "Produto já cadastrado!", "OK");
+			//	return;
+			//}
+
 			await App.Db.Insert(p);
 			await DisplayAlert("Sucesso", "Produto inserido com sucesso!", "OK");
 			await Navigation.PopAsync();

@@ -114,6 +114,12 @@ public partial class ListaProduto : ContentPage
 		{
 			Produto p = e.SelectedItem as Produto;
 
+			// Verifica se o produto está sem categoria
+			if (string.IsNullOrWhiteSpace(p.Categoria))
+			{
+				DisplayAlert("Atenção", "Este produto está sem categoria. Edite para adicionar uma categoria.", "OK");
+			}
+
 			Navigation.PushAsync(new Views.EditarProduto(p)
 			{
 				BindingContext = p,
@@ -150,5 +156,30 @@ public partial class ListaProduto : ContentPage
 		// Supondo que você já tenha um método para atualizar a lista, como OnAppearing
 		// Você pode chamar OnAppearing diretamente ou recarregar a lista conforme sua lógica
 		OnAppearing();
+	}
+
+	// Adicione este método no code-behind para exibir o relatório ao clicar no botão
+	private async void ToolbarItemRelatorio_Clicked(object sender, EventArgs e)
+	{
+		try
+		{
+			var totais = await App.Db.GetTotalPorCategoria();
+			if (totais.Count == 0)
+			{
+				await DisplayAlert("Relatório", "Nenhum dado encontrado.", "OK");
+				return;
+			}
+
+			string relatorio = string.Join(
+				Environment.NewLine,
+				totais.Select(t => $"{(string.IsNullOrWhiteSpace(t.Categoria) ? "Sem Categoria" : t.Categoria)}: {t.Total:C}")
+			);
+
+			await DisplayAlert("Total por Categoria", relatorio, "OK");
+		}
+		catch (Exception ex)
+		{
+			await DisplayAlert("Ops", ex.Message, "OK");
+		}
 	}
 }

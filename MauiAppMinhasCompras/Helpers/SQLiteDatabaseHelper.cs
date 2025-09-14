@@ -20,10 +20,10 @@ namespace MauiAppMinhasCompras.Helpers
 
         public Task<List<Produto>> Update(Produto p)
         {
-            string sql = "UPDATE Produto SET Descricao = ?, Quantidade = ?, Preco = ? WHERE ID = ?";
+            string sql = "UPDATE Produto SET Descricao = ?, Quantidade = ?, Preco = ?, Categoria = ? WHERE ID = ?";
 
             return _conn.QueryAsync<Produto>(
-                sql, p.Descricao, p.Quantidade, p.Preco, p.ID
+                sql, p.Descricao, p.Quantidade, p.Preco, p.ID, p.Categoria
             );
         }
 
@@ -43,5 +43,16 @@ namespace MauiAppMinhasCompras.Helpers
 
             return _conn.QueryAsync<Produto>(sql);
         }
+
+        // Adicione este método para obter o total gasto por categoria
+        public async Task<List<(string Categoria, double Total)>> GetTotalPorCategoria()
+        {
+            string sql = "SELECT Categoria, SUM(Quantidade * Preco) as Total FROM Produto GROUP BY Categoria";
+            var result = await _conn.QueryAsync<ProdutoTotalCategoria>(sql);
+            return result.Select(r => (r.Categoria, r.Total)).ToList();
+        }
+
+        
+        
     }
 }
